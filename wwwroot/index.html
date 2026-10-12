@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Astro-Vault</title>
+    </head>
+
+    <body>
+        <p>Hello World!</p>
+
+        <!--Form below places user input into url, which is read in the JavaScript below-->
+        <form action="./index.html" method="get"> 
+            <input type="text" name="message" />
+            <button type="Submit">Submit</button>
+        </form>
+
+        <p id="output"></p>
+    </body>
+
+    <!--JavaScript-->
+    <script>
+        const output = document.getElementById("output");
+        // Get the message parameter in URL and store it in search var
+        const search = new URLSearchParams(window.location.search).get("message");
+        
+        // Make a GET request to server with user message input
+        fetch("/search?message=" + search)
+        .then(async (res) => {
+        
+        const data = await res.json();
+        console.log(data);
+        output.textContent = res.ok ? "Found: " + data : "Not found...";
+
+        });
+
+    </script>
+</html>
