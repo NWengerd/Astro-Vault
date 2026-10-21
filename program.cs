@@ -8,7 +8,7 @@ app.UseStaticFiles();
 app.MapGet("/search", (string? message) =>
 {
     // Ensure query from front-end is not null
-    if (message == null) { return Results.BadRequest();}
+    if (message == null) { return Results.BadRequest();} // Does not work?
 
     // Trim whitespace
     message = message.Trim();
@@ -20,5 +20,7 @@ app.MapGet("/search", (string? message) =>
 
 }
 );
+
+MySQL.Main();
 
 app.Run();
