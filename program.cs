@@ -21,6 +21,7 @@ app.MapGet("/search", (string? message) =>
 }
 );
 
-MySQL.Main();
+// MySQL.Main();
+CSVParser.Main();
 
 app.Run();
