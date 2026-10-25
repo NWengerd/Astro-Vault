@@ -8,20 +8,31 @@ app.UseStaticFiles();
 app.MapGet("/search", (string? message) =>
 {
     // Ensure query from front-end is not null
-    if (message == null) { return Results.BadRequest();} // Does not work?
+    if (message is null) { return Results.BadRequest();}
 
     // Trim whitespace
     message = message.Trim();
+    // FIXME: message should be made lower case, as should everything stored in the database for ease of use
 
-    // Querying database would go here...
-
+    star? tuple = findStar(message);
+    if (tuple is null) {return Results.Ok(0);}
     // Temporarily just return original search
-    return Results.Ok(message);
+    return Results.Ok(tuple);
 
 }
 );
 
-// MySQL.Main();
-CSVParser.Main();
+star? findStar(string message)
+{
+    // First query proper_name
+    star? tuple = MySQL.queryStarsDB("proper_name", message);
+    if (tuple is not null) {return tuple;}
+
+    // more queries after initial failure
+    return null;
+}
+
+//MySQL.test();
+//CSVParser.Main();
 
 app.Run();

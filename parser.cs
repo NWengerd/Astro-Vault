@@ -1,7 +1,7 @@
 using System.Globalization;
 using CsvHelper;
 
-public class Foo
+public class star
 {
     public int? id { get; set; }
     public int? hip { get; set; }
@@ -21,6 +21,14 @@ public class Foo
     public string? con { get; set; }
     public double? lum { get; set; }
     public string? var { get; set; }
+
+    public star(int? id, string? proper)
+    {
+        this.id = id;
+        this.proper = proper;
+    }
+
+    public star() {}
 }
 
 public class CSVParser
@@ -34,7 +42,7 @@ public class CSVParser
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             // Read file contents sequentially
-            var records = csv.GetRecords<Foo>(); // Fills records using Foo's member names and order
+            var records = csv.GetRecords<star>(); // Fills records using Foo's member names and order
             foreach (var record in records)
             {
                 Console.WriteLine($"ID: {record.id}, proper_name: {record.proper}, constellation: {record.con}");
