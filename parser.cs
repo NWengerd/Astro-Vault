@@ -33,7 +33,7 @@ public class star
 
 public class CSVParser
 {
-    public static void Main()
+    public static void test()
     {
         string path = @".\hyg_v42.csv";
 

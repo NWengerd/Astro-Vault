@@ -42,12 +42,11 @@ public class MySQL
         Console.WriteLine("Done.");
     }
 
-    // Return first tuple if successful, Return null if unsuccessful
+    // Return star object if successful, Return null if unsuccessful
     public static star? queryStarsDB(String attribute, String message)
     {
         // Note: This connection string is temporary and needs to match the db server on the docker container
         string connStr = "server=localhost;user=root;database=db_name;port=3306;password=password";
-        // Create connection to database specified in connStr
         MySqlConnection conn = new MySqlConnection(connStr);
 
         star? tuple = null;
@@ -65,6 +64,7 @@ public class MySQL
 
             // Read first tuple returned, if there is one to read
             if(reader.Read()) {
+                // FIXME: This should read all attributes of star
                 tuple = new star(reader.GetInt32(0), reader.GetString(1));
             }
             // Close query so more queries can be made
