@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Astro-Vault</title>
+
+        <link rel="stylesheet" href="links.css">
+
+        <style>
+            form
+            {
+                display: flex;
+                justify-content: center;
+                margin-top: 50px;
+            }
+            textarea{resize:none;}
+        </style>
+    </head>
+
+    <body>
+        <div class="links">
+        <a href="./index.html">Astro-Vault</a>
+        <a href="./search.html">Search</a>
+        <a href="./calculator.html">Calculator</a>
+        </div>
+        
+        <!--Form below places user input into url, which is read in the JavaScript below-->
+        <form action="./search.html" method="get"> 
+            <textarea name="message" rows="1" cols="100" placeholder="Enter Star Name"></textarea>
+            <button type="Submit">Submit</button>
+        </form>
+
+        <p id="output"></p>
+    </body>
+
+    <!--JavaScript-->
+    <script>
+        const starParams = ["ID", "HIP", "HD", "HR", "GL", "Name", "Right Ascension", "Declination", "Distance", 
+                            "Radial Velocity", "Absolute Magnitude", "Spectrocity", "Bayer Flamsteed", "Constellation", "Luminosity"];
+        
+        const output = document.getElementById("output");
+        // Get the message parameter in URL and store it in search var
+        const search = new URLSearchParams(window.location.search).get("message");
+        
+        // Make a GET request to server with user message input
+        fetch("/search?message=" + search)
+        .then(async (res) => {
+        
+        const data = await res.json();
+        console.log(data);
+
+        if (data != 0) 
+        {
+            // Turn return object into an array
+            let values = Object.values(data);
+            
+            // Print all parameters to the document in seperate <p> tags
+            for (let i = 0; i < 15; i++)
+            {
+            const p = document.body.appendChild(document.createElement("p"));
+            p.textContent = starParams[i] + ": " + values[i];
+            }
+        }
+        else
+        {
+            output.textContent = "Failed to find \"" + search + "\", please try again.";
+        }
+        });
+
+    </script>
+</html>

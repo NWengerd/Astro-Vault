@@ -3,53 +3,36 @@
     <head>
         <meta charset="UTF-8">
         <title>Astro-Vault</title>
+
+        <link rel="stylesheet" href="links.css">
+
+        <style>
+        </style>
     </head>
 
     <body>
-        <p>Hello World!</p>
+        <div class="links">
+        <a href="./index.html">Astro-Vault</a>
+        <a href="./search.html">Search</a>
+        <a href="./calculator.html">Calculator</a>
+        </div>
 
-        <!--Form below places user input into url, which is read in the JavaScript below-->
-        <form action="./index.html" method="get"> 
-            <input type="text" name="message" />
-            <button type="Submit">Submit</button>
-        </form>
-
-        <p id="output"></p>
+        <div class="canva"><canvas id="constell" width="800" height="500"></canvas></div>
     </body>
 
     <!--JavaScript-->
     <script>
-        const starParams = ["ID", "HIP", "HD", "HR", "GL", "Name", "Right Ascension", "Declination", "Distance", 
-                            "Radial Velocity", "Absolute Magnitude", "Spectrocity", "Bayer Flamsteed", "Constellation", "Luminosity"];
-        
-        const output = document.getElementById("output");
-        // Get the message parameter in URL and store it in search var
-        const search = new URLSearchParams(window.location.search).get("message");
-        
-        // Make a GET request to server with user message input
-        fetch("/search?message=" + search)
-        .then(async (res) => {
-        
-        const data = await res.json();
-        console.log(data);
-
-        if (data != 0) 
+        function draw()
         {
-            // Turn return object into an array
-            let values = Object.values(data);
-            
-            // Print all parameters to the document in seperate <p> tags
-            for (let i = 0; i < 15; i++)
-            {
-            const p = document.body.appendChild(document.createElement("p"));
-            p.textContent = starParams[i] + ": " + values[i];
-            }
-        }
-        else
-        {
-            output.textContent = "Failed to find \"" + search + "\", please try again.";
-        }
-        });
+            // Get canvas element
+            const canvas = document.getElementById('constell');
+            // Access canvas context
+            const ctx = canvas.getContext('2d');
 
+            // Solid filled rectangle (x, y, width, height)
+            ctx.fillStyle = 'darkslategrey';
+            ctx.fillRect(0, 0, 800, 500);
+        }
+        draw();
     </script>
 </html>

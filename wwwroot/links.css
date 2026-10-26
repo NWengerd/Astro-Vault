@@ -1,0 +1,31 @@
+body 
+{
+    background-color:silver;
+}
+
+div.canva
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+}
+
+div.links
+{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+}
+
+div.links a 
+{
+    background-color:crimson;
+    box-shadow: 0 5px 0 darkred;
+    color:ghostwhite;
+    text-decoration: none;
+    margin-left: 250px;
+    margin-right: 250px;
+}
