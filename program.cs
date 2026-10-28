@@ -29,12 +29,45 @@ app.MapGet("/search", (string? message) =>
 // Return star object on success, return on null on failure
 star? findStar(string message)
 {
-    // First query proper_name
+    message = message.Trim();
+
+    // First, search by star name
     star? tuple = MySQL.queryStarsDB("proper_name", message);
-    if (tuple is not null) {return tuple;}
 
-    //FIXME: Should then query all id's in order so that user can search using any common notation
+    if (tuple is not null)
+    {
+        return tuple;
+    }
 
+    // If the input is numeric, search by ID fields
+    if (int.TryParse(message, out _))
+    {
+        // Search by the star's primary ID
+        tuple = MySQL.queryStarsDB("id", message);
+
+        if (tuple is not null)
+        {
+            return tuple;
+        }
+
+        // Search by Hipparcos ID
+        tuple = MySQL.queryStarsDB("hipID", message);
+
+        if (tuple is not null)
+        {
+            return tuple;
+        }
+
+        // Search by Henry Draper ID
+        tuple = MySQL.queryStarsDB("hdID", message);
+
+        if (tuple is not null)
+        {
+            return tuple;
+        }
+    }
+
+    // No matching star was found
     return null;
 }
 
