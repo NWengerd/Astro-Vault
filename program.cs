@@ -26,7 +26,7 @@ app.MapGet("/search", (string? message) =>
 }
 );
 
-// Return star object on success, return on null on failure
+// Return star object on success, return null on failure
 star? findStar(string message)
 {
     message = message.Trim();
