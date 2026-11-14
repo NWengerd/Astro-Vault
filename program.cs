@@ -26,13 +26,33 @@ app.MapGet("/search", (string? message) =>
 }
 );
 
+app.MapGet("/table", (int message) =>
+{
+    List<star>? table = getTable(message);
+
+    if (table is null) 
+        return Results.Ok(0);
+
+    return Results.Ok(table);
+});
+
+
+// Query database for a list of stars within the specified range
+// Return list of stars on success, return null on failure
+List<star>? getTable(int range)
+{
+    List<star>? stars = MySQL.queryStarList(range);
+    return stars;
+}
+
+
 // Return star object on success, return null on failure
 star? findStar(string message)
 {
     message = message.Trim();
 
     // First, search by star name
-    star? tuple = MySQL.queryStarsDB("proper_name", message);
+    star? tuple = MySQL.queryStar("proper_name", message);
 
     if (tuple is not null)
     {
@@ -43,7 +63,7 @@ star? findStar(string message)
     if (int.TryParse(message, out _))
     {
         // Search by the star's primary ID
-        tuple = MySQL.queryStarsDB("id", message);
+        tuple = MySQL.queryStar("id", message);
 
         if (tuple is not null)
         {
@@ -51,7 +71,7 @@ star? findStar(string message)
         }
 
         // Search by Hipparcos ID
-        tuple = MySQL.queryStarsDB("hipID", message);
+        tuple = MySQL.queryStar("hipID", message);
 
         if (tuple is not null)
         {
@@ -59,7 +79,7 @@ star? findStar(string message)
         }
 
         // Search by Henry Draper ID
-        tuple = MySQL.queryStarsDB("hdID", message);
+        tuple = MySQL.queryStar("hdID", message);
 
         if (tuple is not null)
         {

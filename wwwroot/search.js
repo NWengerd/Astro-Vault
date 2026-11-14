@@ -1,8 +1,13 @@
+fillTable();
+
 const starParams = ["ID", "HIP", "HD", "HR", "GL", "Name", "Right Ascension", "Declination", "Distance", 
     "Radial Velocity", "Absolute Magnitude", "Spectrocity", "Bayer Flamsteed", "Constellation", "Luminosity"];
+
+const tableParams = ["proper", "con", "id", "hip", "hd", "hr", "gl"];
     
 const output = document.getElementById("output");
 const input = document.querySelector("input");
+const table = document.getElementById("table-output");
 const searchButton = document.querySelector("button");
 
 // run searchStar when user presses search button
@@ -26,22 +31,67 @@ function searchStar(event)
     
     const data = await res.json();
     console.log(data);
+    
+    printSearchResults(data, search);
 
+    });
+}
+
+
+// Print search results to document
+function printSearchResults(data, search)
+{
     if (data != 0) 
     {
-        // Turn return object into an array
-        let values = Object.values(data);
-        
-        // Print all parameters to the document in seperate <p> tags
-        for (let i = 0; i < 15; i++)
+        const values = Object.values(data);
+
+        for (let i = 0; i < starParams.length; i++)
         {
-        const p = output.appendChild(document.createElement("p"));
-        p.textContent = starParams[i] + ": " + values[i];
+            const field = output.appendChild(document.createElement("div"));
+            field.className = "star-field";
+
+            const label = field.appendChild(document.createElement("span"));
+            label.className = "label";
+            label.textContent = starParams[i];
+
+            const value = field.appendChild(document.createElement("span"));
+            value.className = "value";
+            value.textContent = values[i];
         }
     }
     else
     {
-        output.textContent = "Failed to find \"" + search + "\", please try again.";
+        const message = output.appendChild(document.createElement("p"));
+        message.className = "message error";
+        message.textContent = "Failed to find \"" + search + "\", please try again.";
     }
+}
+
+
+function fillTable()
+{
+    range = 0;
+
+    fetch("/table?message=" + range)
+    .then(async (res) => {
+    
+        const data = await res.json();
+        console.log(data);
+        
+        // Reset table contents
+        table.innerHTML = "";
+
+        // Add each star to the table
+        for (const star of data)
+        {
+            const row = table.appendChild(document.createElement("tr"));
+
+            for (const param of tableParams)
+            {
+                const cell = row.appendChild(document.createElement("td"));
+                cell.textContent = star[param];
+            }
+        }
+        
     });
 }
