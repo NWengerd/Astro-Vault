@@ -1,0 +1,31 @@
+const starParams = ["ID", "HIP", "HD", "HR", "GL", "Name", "Right Ascension", "Declination", "Distance", 
+    "Radial Velocity", "Absolute Magnitude", "Spectrocity", "Bayer Flamsteed", "Constellation", "Luminosity"];
+    
+const output = document.getElementById("output");
+// Get the message parameter in URL and store it in search var
+    const search = new URLSearchParams(window.location.search).get("message");
+    
+    // Make a GET request to server with user message input
+    fetch("/search?message=" + search)
+    .then(async (res) => {
+    
+    const data = await res.json();
+    console.log(data);
+
+    if (data != 0) 
+    {
+        // Turn return object into an array
+        let values = Object.values(data);
+        
+        // Print all parameters to the document in seperate <p> tags
+        for (let i = 0; i < 15; i++)
+        {
+        const p = document.body.appendChild(document.createElement("p"));
+        p.textContent = starParams[i] + ": " + values[i];
+        }
+    }
+    else
+    {
+        output.textContent = "Failed to find \"" + search + "\", please try again.";
+    }
+    });
