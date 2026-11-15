@@ -1,3 +1,5 @@
+// initialize table of stars
+let range = 1;
 fillTable();
 
 const starParams = ["ID", "HIP", "HD", "HR", "GL", "Name", "Right Ascension", "Declination", "Distance", 
@@ -9,6 +11,18 @@ const output = document.getElementById("output");
 const input = document.querySelector("input");
 const table = document.getElementById("table-output");
 const searchButton = document.querySelector("button");
+const backButton = document.getElementById("back-btn");
+const nextButton = document.getElementById("next-btn");
+
+// Navigate between table pages
+backButton.addEventListener("click", () => {
+    range -= 12;
+    fillTable();
+});
+nextButton.addEventListener("click", () => {
+    range += 12;
+    fillTable();
+});
 
 // run searchStar when user presses search button
 searchButton.addEventListener("click", searchStar);
@@ -44,6 +58,8 @@ function printSearchResults(data, search)
     if (data != 0) 
     {
         const values = Object.values(data);
+        // Remove 'flam' from star data (useful in the future but will be removed for the moment)
+        values.splice(13, 1);
 
         for (let i = 0; i < starParams.length; i++)
         {
@@ -56,7 +72,7 @@ function printSearchResults(data, search)
 
             const value = field.appendChild(document.createElement("span"));
             value.className = "value";
-            value.textContent = values[i];
+            value.textContent = (values[i] == null) ? "-------" : values[i];
         }
     }
     else
@@ -70,8 +86,8 @@ function printSearchResults(data, search)
 
 function fillTable()
 {
-    range = 0;
-
+    // TO-DO: Make it so this only displays named stars (or that the user can filter)
+    
     fetch("/table?message=" + range)
     .then(async (res) => {
     
@@ -89,7 +105,7 @@ function fillTable()
             for (const param of tableParams)
             {
                 const cell = row.appendChild(document.createElement("td"));
-                cell.textContent = star[param];
+                cell.textContent = (star[param] == null) ? "-------" : star[param];
             }
         }
         

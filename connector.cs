@@ -107,7 +107,7 @@ public static List<star>? queryStarList(int range)
 
         using MySqlCommand cmd = new MySqlCommand(queryS, conn);
         cmd.Parameters.AddWithValue("@range", range);
-        cmd.Parameters.AddWithValue("@rangeEnd", range + 25);
+        cmd.Parameters.AddWithValue("@rangeEnd", range + 12);
 
         // Parse query output
         List<star> stars = ReadStarQueryOutput(cmd);
