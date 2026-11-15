@@ -16,7 +16,8 @@ const nextButton = document.getElementById("next-btn");
 
 // Navigate between table pages
 backButton.addEventListener("click", () => {
-    range -= 12;
+    if (range > 1)
+        range -= 12;
     fillTable();
 });
 nextButton.addEventListener("click", () => {

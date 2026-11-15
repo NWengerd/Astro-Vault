@@ -91,6 +91,7 @@ star? findStar(string message)
     return null;
 }
 
+//artReader.ReadConstellationArt();
 //MySQL.test();
 //CSVParser.test();
 
