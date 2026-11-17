@@ -4,15 +4,19 @@ using System.Data;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
+class Database
+{
+    public static string connStr =
+        "Server=localhost;Port=3306;Database=StarDB;User ID=root;Password=;";
+} 
+
+
 public class MySQL
 {
 
 // Return star object if successful, Return null if unsuccessful
 public static star? queryStar(string attribute, string message)
 {
-    string connStr =
-        "Server=localhost;Port=3306;Database=StarDB;User ID=root;Password=;";
-
     // Only allow recognized column names for the search attribute.
     string[] allowedAttributes =
     {
@@ -28,7 +32,7 @@ public static star? queryStar(string attribute, string message)
 
     try
     {
-        using MySqlConnection conn = new MySqlConnection(connStr);
+        using MySqlConnection conn = new MySqlConnection(Database.connStr);
         conn.Open();
 
         string queryS = $@"
@@ -73,13 +77,10 @@ public static star? queryStar(string attribute, string message)
 
 // Return list of stars if successful, return null if unsuccessful
 public static List<star>? queryStarList(int range)
-{
-    string connStr =
-        "Server=localhost;Port=3306;Database=StarDB;User ID=root;Password=;";
-    
+{  
     try
     {
-        using MySqlConnection conn = new MySqlConnection(connStr);
+        using MySqlConnection conn = new MySqlConnection(Database.connStr);
         conn.Open();
 
         string queryS = $@"
@@ -187,12 +188,9 @@ public static List<star> ReadStarQueryOutput(MySqlCommand cmd)
 
 public static void TestConnection()
 {
-    string connStr =
-        "Server=localhost;Port=3306;Database=StarDB;User ID=root;Password=;";
-
     try
     {
-        using var conn = new MySqlConnection(connStr);
+        using var conn = new MySqlConnection(Database.connStr);
         conn.Open();
         using var dbCmd = new MySqlCommand("SELECT DATABASE();", conn);
         Console.WriteLine($"Connected database: {dbCmd.ExecuteScalar()}");

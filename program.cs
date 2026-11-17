@@ -91,7 +91,7 @@ star? findStar(string message)
     return null;
 }
 
-//artReader.ReadConstellationArt();
+// artReader.ReadConstellationArt(); // Uncomment me to fill constellationArt table
 //MySQL.test();
 //CSVParser.test();
 
