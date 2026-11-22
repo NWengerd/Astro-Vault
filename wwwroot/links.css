@@ -3,18 +3,11 @@ body
     background-color:silver;
 }
 
-div.canva
-{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 90vh;
-}
-
 div.links
 {
-    display: grid;
-    grid-template-columns: auto auto auto;
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
     padding: 10px;
     font-size: 20px;
     text-align: center;
@@ -22,10 +15,10 @@ div.links
 
 div.links a 
 {
-    background-color:crimson;
+    padding: 0.1em 0.6em;
+    white-space: nowrap;
+    background-color: crimson;
     box-shadow: 0 5px 0 darkred;
-    color:ghostwhite;
+    color: ghostwhite;
     text-decoration: none;
-    margin-left: 250px;
-    margin-right: 250px;
 }

@@ -186,6 +186,129 @@ public static List<star> ReadStarQueryOutput(MySqlCommand cmd)
 }
 
 
+// Return list of lines in a constellation if successful, return null if unsuccessful
+public static constellationArt? queryConstellationArt(int constellation)
+{
+    try
+    {
+        using MySqlConnection conn = new MySqlConnection(Database.connStr);
+        conn.Open();
+
+        string queryS = $@"
+            WITH StarsOfConst AS (SELECT id, rightAsc, declination FROM stars WHERE constellation = {constellation})
+            SELECT stars1.rightasc AS rightAsc1, stars1.declination AS declination1, constellationArt.star1, 
+            stars2.rightasc AS rightAsc2, stars2.declination AS declination2, constellationArt.star2 
+                FROM ((SELECT star1, star2 FROM constellationArt WHERE constellation = {constellation}) as constellationArt 
+                JOIN StarsOfConst AS stars1)
+                JOIN StarsOfConst as stars2
+            WHERE constellationArt.star1 = stars1.id 
+            AND constellationArt.star2 = stars2.id;";
+
+        using MySqlCommand cmd = new MySqlCommand(queryS, conn);
+
+        // Parse query output
+        constellationArt art = ReadArtQueryOutput(cmd);
+
+        conn.Close();
+
+        // Get full constellation name
+        art.constFullName = GetFullConstellationName(constellation);
+
+        // Return lines if successful, null if unsuccessful
+        return art.lines?.Count == 0 ? null : art;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database query failed: {ex.Message}");
+        return null;
+    }        
+}
+
+
+// Return full constellation name if successful, return null if unsuccessful
+public static string? GetFullConstellationName(int constellation)
+{
+    try
+    {
+        using MySqlConnection conn = new MySqlConnection(Database.connStr);
+        conn.Open();
+
+        string queryS = $@"
+            SELECT fullName FROM constellations WHERE areaRank = {constellation} LIMIT 1;";
+
+        using MySqlCommand cmd = new MySqlCommand(queryS, conn);
+
+        using MySqlDataReader reader = cmd.ExecuteReader();
+
+        // Read from query output and return full constellation name
+        string? name = null;
+        if (reader.Read())
+        {
+            int index = reader.GetOrdinal("fullName");
+            name = reader.IsDBNull(index)
+                ? null
+                : Convert.ToString(reader.GetValue(index));
+        }
+
+        reader.Close();
+        return name;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database query failed: {ex.Message}");
+        return null;
+    }        
+}
+
+
+// Take a MySQL command and return a list of lines found by that command
+public static constellationArt ReadArtQueryOutput(MySqlCommand cmd)
+{
+    using MySqlDataReader reader = cmd.ExecuteReader();
+
+    constellationArt art = new constellationArt
+    {
+        lines = new List<constellationLine?>()
+    };
+
+    while (reader.Read())
+    {
+        // Convert database NULL values into C# nullable values.
+        int? ReadInt(string column)
+        {
+            int index = reader.GetOrdinal(column);
+            return reader.IsDBNull(index)
+                ? null
+                : Convert.ToInt32(reader.GetValue(index));
+        }
+
+        double? ReadDouble(string column)
+        {
+            int index = reader.GetOrdinal(column);
+            return reader.IsDBNull(index)
+                ? null
+                : Convert.ToDouble(reader.GetValue(index));
+        }
+
+        constellationLine tuple = new constellationLine
+        {
+            star1 = ReadInt("star1"),
+            rightAsc1 = ReadDouble("rightAsc1"),
+            declination1 = ReadDouble("declination1"),
+            star2 = ReadInt("star2"),
+            rightAsc2 = ReadDouble("rightAsc2"),
+            declination2 = ReadDouble("declination2")
+        };
+
+        art.lines.Add(tuple);
+    }
+
+    reader.Close();
+
+    return art;
+}
+
+
 public static void TestConnection()
 {
     try
