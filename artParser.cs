@@ -4,12 +4,28 @@ using System.Text.RegularExpressions;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
-public class constellationArt
+public class constellationLine
 {
-    public required List<constellationLines> constellations { get; set; }
+    public int? star1 {get; set;}
+    public double? rightAsc1 {get; set;}
+    public double? declination1 {get; set;}
+    public  int? star2 {get; set;}
+    public double? rightAsc2 {get; set;}
+    public double? declination2 {get; set;}
 }
 
-public class constellationLines
+public class constellationArt
+{
+    public string? constFullName {get; set;}
+    public List<constellationLine?>? lines {get; set;}
+}
+
+public class parser_constellationArt
+{
+    public required List<parser_constellationLines> constellations { get; set; }
+}
+
+public class parser_constellationLines
 {
     public required string iau { get; set; }
     public required List<List<int>> lines { get; set; }
@@ -26,7 +42,7 @@ public class artReader
         // convert json into c# object
         try
         {
-            constellationArt art = JsonSerializer.Deserialize<constellationArt>(json) 
+            parser_constellationArt art = JsonSerializer.Deserialize<parser_constellationArt>(json) 
                 ?? throw new Exception("Failed to parse ruelleV3.json");
 
             InsertConstellationArt(art);
@@ -38,7 +54,7 @@ public class artReader
     }
 
 
-    private static void InsertConstellationArt(constellationArt art)
+    private static void InsertConstellationArt(parser_constellationArt art)
     {
         Dictionary<string, int> constellationIds = GetConstellationIds(art);
 
@@ -121,7 +137,7 @@ public class artReader
 
 
     // Return a dictionary mapping constellation names to their areaRank IDs
-    private static Dictionary<string, int> GetConstellationIds(constellationArt art)
+    private static Dictionary<string, int> GetConstellationIds(parser_constellationArt art)
     {
         Dictionary<string, int> conIds = new Dictionary<string, int>();
         
@@ -190,12 +206,9 @@ public class artReader
     
 
     // Write constellation art to a JSON file (for testing purposes)
-    public static void WriteConstellationArtAsync(constellationArt art, string filePath)
+    public static void WriteConstellationArtAsync(parser_constellationArt art, string filePath)
     {
         using FileStream stream = File.Create(filePath);
         JsonSerializer.Serialize(stream, art, WriteOptions);
     }
 }
-
-
-

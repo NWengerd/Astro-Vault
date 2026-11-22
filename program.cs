@@ -36,6 +36,23 @@ app.MapGet("/table", (int message) =>
     return Results.Ok(table);
 });
 
+app.MapGet("/art", (int message) =>
+{
+    constellationArt? table = getConstArt(message);
+
+    if (table is null) 
+        return Results.Ok(0);
+
+    return Results.Ok(table);
+});
+
+// Return list of lines in a constellation if successful, return null if unsuccessful
+constellationArt? getConstArt(int constellation)
+{
+    constellationArt? table = MySQL.queryConstellationArt(constellation);
+    return table;
+}
+
 
 // Query database for a list of stars within the specified range
 // Return list of stars on success, return null on failure
