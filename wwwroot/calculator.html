@@ -1,24 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Astro-Vault</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Star Calculator | Astro-Vault</title>
+    <link rel="stylesheet" href="links.css">
+    <link rel="stylesheet" href="search.css">
 
-        <link rel="stylesheet" href="links.css">
+    <style>
+        #calculator-form {
+            flex-wrap: wrap;
+            align-items: end;
+            gap: 8px;
+            width: 90%;
+            max-width: 900px;
+            margin-inline: auto;
+        }
 
-        <style>
-        </style>
-    </head>
+        #calculator-form .star-field {
+            min-width: 0;
+        }
 
-    <body>
-        <div class="links">
+        #calculator-form input {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        #calculator-form input,
+        #calculator-form select,
+        #calculator-form button {
+            font: inherit;
+            padding: 0.35rem 0.5rem;
+        }
+
+        #output {
+            height: auto;
+            min-height: 4rem;
+            grid-template-columns: 1fr;
+        }
+    </style>
+</head>
+<body>
+    <div class="links">
         <a href="./index.html">Astro-Vault</a>
         <a href="./search.html">Search</a>
-        <a href="./calculator.html">Calculator</a>
-        </div>
-    </body>
+        <a href="./calculator.html" aria-current="page">Calculator</a>
+    </div>
 
-    <!--JavaScript-->
+    <main aria-label="Star Calculator">
+        <form id="calculator-form">
+            <div class="star-field">
+                <label class="label" for="star-query">Star name or catalog ID</label>
+                <input id="star-query" name="message" type="text"
+                       placeholder="Sirius" required>
+            </div>
+
+            <div class="star-field">
+                <label class="label" for="operation">Calculation</label>
+                <select id="operation" name="operation">
+                    <option value="light-years">Distance in light-years</option>
+                    <option value="apparent-magnitude">Estimated apparent magnitude</option>
+                </select>
+            </div>
+
+            <button type="submit">Calculate</button>
+        </form>
+
+        <div id="output">
+            <output id="result" class="value" form="calculator-form"
+                    aria-live="polite">Enter a star to calculate a result.</output>
+        </div>
+    </main>
+
     <script>
+        const form = document.getElementById("calculator-form");
+        const result = document.getElementById("result");
+        const calculateButton = form.querySelector("button[type='submit']");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const params = new URLSearchParams(new FormData(form));
+            const starQuery = params.get("message").trim();
+
+            if (!starQuery) {
+                result.textContent = "Enter a star name or catalog ID.";
+                return;
+            }
+
+            params.set("message", starQuery);
+            calculateButton.disabled = true;
+            result.textContent = "Calculating…";
+
+            try {
+                const response = await fetch(`/calculate?${params}`);
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    result.textContent = data?.error ??
+                        `Calculation failed (HTTP ${response.status}).`;
+                    return;
+                }
+
+                if (!Number.isFinite(data?.value) || typeof data.unit !== "string") {
+                    result.textContent = "The server returned an invalid result.";
+                    return;
+                }
+
+                const value = data.value.toLocaleString(undefined, {
+                    maximumFractionDigits: 3
+                });
+
+                result.textContent = `${starQuery}: ${value} ${data.unit}`;
+            } catch {
+                result.textContent = "Could not connect to the calculator endpoint.";
+            } finally {
+                calculateButton.disabled = false;
+            }
+        });
     </script>
+</body>
 </html>

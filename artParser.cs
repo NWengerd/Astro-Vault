@@ -182,7 +182,7 @@ public class artReader
             conn.Open();
 
             string insert = $@"
-                INSERT INTO constellationArt (id, star1, star2, constellation)
+                INSERT INTO ConstellationArt (id, star1, star2, constellation)
                 VALUES ({id}, {star1}, {star2}, {con});";
 
             MySqlCommand cmd = new MySqlCommand(insert, conn);

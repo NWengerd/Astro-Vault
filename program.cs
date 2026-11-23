@@ -108,8 +108,22 @@ star? findStar(string message)
     return null;
 }
 
-// artReader.ReadConstellationArt(); // Uncomment me to fill constellationArt table
+//artReader.ReadConstellationArt(); // Uncomment me to fill constellationArt table
+
+app.MapGet("/calculate", IResult (string message, string operation) =>
+{
+    var selectedStar = findStar(message);
+    if (selectedStar is null)
+        return Results.NotFound(new { error = "Star not found." });
+
+    var result = StarCalculator.Calculate(selectedStar, operation);
+    if (result is null)
+        return Results.BadRequest(new { error = "Calculation unavailable for this star." });
+
+    return Results.Ok(new { value = result.Value.Value, unit = result.Value.Unit });
+});
 //MySQL.test();
 //CSVParser.test();
+
 
 app.Run();
