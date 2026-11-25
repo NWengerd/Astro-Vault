@@ -174,7 +174,7 @@ public static List<star> ReadStarQueryOutput(MySqlCommand cmd)
             spect = ReadString("spectral"),
             bayer = ReadString("bayer"),
             flam = ReadInt("flamsteed"),
-            con = ReadString("constellation"),
+            con = GetFullConstellationName(ReadInt("constellation")),
             lum = ReadDouble("luminosity"),
             var = ReadString("varID")
         };
@@ -226,7 +226,7 @@ public static constellationArt? queryConstellationArt(int constellation)
 
 
 // Return full constellation name if successful, return null if unsuccessful
-public static string? GetFullConstellationName(int constellation)
+public static string? GetFullConstellationName(int? constellation)
 {
     try
     {
@@ -306,34 +306,5 @@ public static constellationArt ReadArtQueryOutput(MySqlCommand cmd)
     reader.Close();
 
     return art;
-}
-
-
-public static void TestConnection()
-{
-    try
-    {
-        using var conn = new MySqlConnection(Database.connStr);
-        conn.Open();
-        using var dbCmd = new MySqlCommand("SELECT DATABASE();", conn);
-        Console.WriteLine($"Connected database: {dbCmd.ExecuteScalar()}");
-
-        Console.WriteLine("Successfully connected to MySQL!");
-
-        using var cmd = new MySqlCommand(
-            "SELECT DATABASE(), COUNT(*) FROM Stars;", conn);
-
-        using var reader = cmd.ExecuteReader();
-
-        if (reader.Read())
-        {
-            Console.WriteLine($"Database: {reader.GetString(0)}");
-            Console.WriteLine($"Number of stars: {reader.GetInt64(1)}");
-        }
-    }
-    catch (MySqlException ex)
-    {
-        Console.WriteLine($"MySQL connection failed: {ex.Message}");
-    }
 }
 }

@@ -4,6 +4,7 @@ fillTable();
 
 const starParams = ["ID", "HIP", "HD", "HR", "GL", "Name", "Right Ascension", "Declination", "Distance", 
     "Radial Velocity", "Absolute Magnitude", "Spectrocity", "Bayer Flamsteed", "Constellation", "Luminosity"];
+const starUnits = ["", "", "", "", "", "", "", "", " parsecs", " km/sec", "", "", "", "", " suns"];
 
 const tableParams = ["proper", "con", "id", "hip", "hd", "hr", "gl"];
     
@@ -73,7 +74,7 @@ function printSearchResults(data, search)
 
             const value = field.appendChild(document.createElement("span"));
             value.className = "value";
-            value.textContent = (values[i] == null) ? "-------" : values[i];
+            value.textContent = (values[i] == null) ? "-------" : values[i] + starUnits[i];
         }
     }
     else
