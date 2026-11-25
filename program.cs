@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -46,6 +48,20 @@ app.MapGet("/art", (int message) =>
     return Results.Ok(table);
 });
 
+app.MapGet("/calculate", IResult (string message, string operation) =>
+{
+    var selectedStar = findStar(message);
+    if (selectedStar is null)
+        return Results.NotFound(new { error = "Star not found." });
+
+    var result = StarCalculator.Calculate(selectedStar, operation);
+    if (result is null)
+        return Results.BadRequest(new { error = "Calculation unavailable for this star." });
+
+    return Results.Ok(new { value = result.Value.Value, unit = result.Value.Unit });
+});
+
+
 // Return list of lines in a constellation if successful, return null if unsuccessful
 constellationArt? getConstArt(int constellation)
 {
@@ -67,63 +83,43 @@ List<star>? getTable(int range)
 star? findStar(string message)
 {
     message = message.Trim();
+    message = message.ToLower();
 
-    // First, search by star name
-    star? tuple = MySQL.queryStar("proper_name", message);
+    // Initialize return var
+    star? tuple = null;
 
-    if (tuple is not null)
+    // Regex for identifying if the user is searching by an ID
+    Match match = Regex.Match(message, @"^(hip|hd|hr)[\s\-]*(\d+)$");
+
+    // If user is searching by a valid ID
+    if (match.Success)
     {
-        return tuple;
-    }
-
-    // If the input is numeric, search by ID fields
-    if (int.TryParse(message, out _))
-    {
-        // Search by the star's primary ID
-        tuple = MySQL.queryStar("id", message);
-
-        if (tuple is not null)
+        string idSpecifier = match.Groups[1].Value;
+        string idNumber = match.Groups[2].Value;
+        
+        switch (idSpecifier)
         {
-            return tuple;
-        }
-
-        // Search by Hipparcos ID
-        tuple = MySQL.queryStar("hipID", message);
-
-        if (tuple is not null)
-        {
-            return tuple;
-        }
-
-        // Search by Henry Draper ID
-        tuple = MySQL.queryStar("hdID", message);
-
-        if (tuple is not null)
-        {
-            return tuple;
+            case "hip":
+                // Search by Hipparcos ID
+                tuple = MySQL.queryStar("hipID", idNumber);
+                break;
+            case "hd":
+                // Search by Henry Draper ID
+                tuple = MySQL.queryStar("hdID", idNumber);
+                break;
+            case "hr":
+                // Search by Harvard Revised ID
+                tuple = MySQL.queryStar("hrID", idNumber);
+                break;
+            default:
+                break;
         }
     }
-
-    // No matching star was found
-    return null;
+    
+    // If star was found using ID return it, otherwise return search by proper_name
+    return (tuple is not null) ? tuple : MySQL.queryStar("proper_name", message);
 }
 
 //artReader.ReadConstellationArt(); // Uncomment me to fill constellationArt table
-
-app.MapGet("/calculate", IResult (string message, string operation) =>
-{
-    var selectedStar = findStar(message);
-    if (selectedStar is null)
-        return Results.NotFound(new { error = "Star not found." });
-
-    var result = StarCalculator.Calculate(selectedStar, operation);
-    if (result is null)
-        return Results.BadRequest(new { error = "Calculation unavailable for this star." });
-
-    return Results.Ok(new { value = result.Value.Value, unit = result.Value.Unit });
-});
-//MySQL.test();
-//CSVParser.test();
-
 
 app.Run();

@@ -133,50 +133,25 @@ public static List<star> ReadStarQueryOutput(MySqlCommand cmd)
 
     while (reader.Read())
     {
-        // Convert database NULL values into C# nullable values.
-        int? ReadInt(string column)
-        {
-            int index = reader.GetOrdinal(column);
-            return reader.IsDBNull(index)
-                ? null
-                : Convert.ToInt32(reader.GetValue(index));
-        }
-
-        double? ReadDouble(string column)
-        {
-            int index = reader.GetOrdinal(column);
-            return reader.IsDBNull(index)
-                ? null
-                : Convert.ToDouble(reader.GetValue(index));
-        }
-
-        string? ReadString(string column)
-        {
-            int index = reader.GetOrdinal(column);
-            return reader.IsDBNull(index)
-                ? null
-                : Convert.ToString(reader.GetValue(index));
-        }
-
         star tuple = new star
         {
-            id = ReadInt("id"),
-            proper = ReadString("proper_name"),
-            hip = ReadInt("hipID"),
-            hd = ReadInt("hdID"),
-            hr = ReadInt("hrID"),
-            gl = ReadString("glID"),
-            ra = ReadDouble("rightAsc"),
-            dec = ReadDouble("declination"),
-            dist = ReadDouble("dist"),
-            rv = ReadDouble("radialVel"),
-            absmag = ReadDouble("absMag"),
-            spect = ReadString("spectral"),
-            bayer = ReadString("bayer"),
-            flam = ReadInt("flamsteed"),
-            con = GetFullConstellationName(ReadInt("constellation")),
-            lum = ReadDouble("luminosity"),
-            var = ReadString("varID")
+            id = ReadInt("id", reader),
+            proper = ReadString("proper_name", reader),
+            hip = ReadInt("hipID", reader),
+            hd = ReadInt("hdID", reader),
+            hr = ReadInt("hrID", reader),
+            gl = ReadString("glID", reader),
+            ra = ReadDouble("rightAsc", reader),
+            dec = ReadDouble("declination", reader),
+            dist = ReadDouble("dist", reader),
+            rv = ReadDouble("radialVel", reader),
+            absmag = ReadDouble("absMag", reader),
+            spect = ReadString("spectral", reader),
+            bayer = ReadString("bayer", reader),
+            flam = ReadInt("flamsteed", reader),
+            con = GetFullConstellationName(ReadInt("constellation", reader)),
+            lum = ReadDouble("luminosity", reader),
+            var = ReadString("varID", reader)
         };
 
         stars.Add(tuple);
@@ -273,31 +248,14 @@ public static constellationArt ReadArtQueryOutput(MySqlCommand cmd)
 
     while (reader.Read())
     {
-        // Convert database NULL values into C# nullable values.
-        int? ReadInt(string column)
-        {
-            int index = reader.GetOrdinal(column);
-            return reader.IsDBNull(index)
-                ? null
-                : Convert.ToInt32(reader.GetValue(index));
-        }
-
-        double? ReadDouble(string column)
-        {
-            int index = reader.GetOrdinal(column);
-            return reader.IsDBNull(index)
-                ? null
-                : Convert.ToDouble(reader.GetValue(index));
-        }
-
         constellationLine tuple = new constellationLine
         {
-            star1 = ReadInt("star1"),
-            rightAsc1 = ReadDouble("rightAsc1"),
-            declination1 = ReadDouble("declination1"),
-            star2 = ReadInt("star2"),
-            rightAsc2 = ReadDouble("rightAsc2"),
-            declination2 = ReadDouble("declination2")
+            star1 = ReadInt("star1", reader),
+            rightAsc1 = ReadDouble("rightAsc1", reader),
+            declination1 = ReadDouble("declination1", reader),
+            star2 = ReadInt("star2", reader),
+            rightAsc2 = ReadDouble("rightAsc2", reader),
+            declination2 = ReadDouble("declination2", reader)
         };
 
         art.lines.Add(tuple);
@@ -306,5 +264,33 @@ public static constellationArt ReadArtQueryOutput(MySqlCommand cmd)
     reader.Close();
 
     return art;
+}
+
+
+// Pull int from SQL query reader
+private static int? ReadInt(string column, MySqlDataReader reader)
+{
+    int index = reader.GetOrdinal(column);
+    return reader.IsDBNull(index)
+        ? null
+        : Convert.ToInt32(reader.GetValue(index));
+}
+
+// Pull double from SQL query reader
+private static double? ReadDouble(string column, MySqlDataReader reader)
+{
+    int index = reader.GetOrdinal(column);
+    return reader.IsDBNull(index)
+        ? null
+        : Convert.ToDouble(reader.GetValue(index));
+}
+
+// Pull string from SQL query reader
+private static string? ReadString(string column, MySqlDataReader reader)
+{
+    int index = reader.GetOrdinal(column);
+    return reader.IsDBNull(index)
+        ? null
+        : Convert.ToString(reader.GetValue(index));
 }
 }
